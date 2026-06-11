@@ -11,13 +11,15 @@ const io = createSocketServer(httpServer);
 app.set("io", io);
 
 function startServer() {
-    connectDB().then(() => {
-        httpServer.listen(env.PORT, () => {
-            logger.info({ port: env.PORT }, "Server is running");
-        });
-    }).catch((error) => {
-        logger.error("Server failed to start", error);
-        process.exit(1);
+  connectDB()
+    .then(() => {
+      app.listen(env.PORT, () => {
+        logger.info({ port: env.PORT }, "Server is running");
+      });
+    })
+    .catch((error) => {
+      logger.error("Server failed to start", error);
+      process.exit(1);
     });
 }
 
