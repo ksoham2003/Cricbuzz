@@ -1,10 +1,9 @@
 import React from 'react'
+import { Outlet } from 'react-router'
 
 const DashboardProtection = () => {
     return (
-        <div>
-            this is DashboardProtection
-        </div>
+        <Outlet />
     )
 }
 

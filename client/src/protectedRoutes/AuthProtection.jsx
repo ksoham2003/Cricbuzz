@@ -1,10 +1,9 @@
 import React from 'react'
+import { Outlet } from 'react-router'
 
 const AuthProtection = () => {
     return (
-        <div>
-            this is AuthProtection
-        </div>
+        <Outlet />
     )
 }
 
