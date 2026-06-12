@@ -16,7 +16,7 @@ const envSchema = z.object({
     GOOGLE_CLIENT_SECRET: z.string(),
     GOOGLE_CALLBACK_URL: z.string(),
     JWT_SECRET: z.string(),
-    // JWT_SECRET_REFRESH: z.string(),
+    JWT_REFRESH_SECRET: z.string(),
     // JWT_SECRET_RESET_PASSWORD: z.string(),
     // JWT_SECRET_VERIFY_EMAIL: z.string(),
 });
