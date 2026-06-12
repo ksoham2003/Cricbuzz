@@ -7,6 +7,7 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
     role: { type: String, enum: Object.values(ROLES), default: ROLES.SCORER },
+    refreshToken: { type: String, default: null },
     isDeleted: { type: Boolean, default: false },
   },
   { timestamps: true }
