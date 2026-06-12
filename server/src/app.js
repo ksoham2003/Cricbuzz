@@ -1,11 +1,17 @@
 import express from "express";
 import env from "./config/env.js";
-import logger from "./config/logger.js";
 import morgan from "morgan";
+import SecurityMiddleware from "./middleware/security.middleware.js";
+import googleOAuthMiddleware from "./middleware/googleOAuth.middleware.js";
+import authRouter from "./modules/auth/auth.routes.js";
 
 
 function createApp() {
     const app = express();
+
+    SecurityMiddleware(app)
+
+    googleOAuthMiddleware(app);
 
     if (env.NODE_ENV === 'development') {
         app.use(morgan('dev'));
@@ -16,6 +22,8 @@ function createApp() {
     app.get("/health", (req, res) => {
         res.status(200).json({ message: "OK" });
     })
+
+    app.use("/api/auth", authRouter);
 
     return app;
 }
