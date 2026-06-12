@@ -9,6 +9,10 @@ const router = express.Router();
 router.post("/register", (req, res, next) => AuthController.register(req, res, next));
 router.post("/login", (req, res, next) => AuthController.login(req, res, next));
 
+// Token Management Endpoints
+router.post("/refresh", (req, res, next) => AuthController.refresh(req, res, next));
+router.post("/logout", authenticate, (req, res, next) => AuthController.logout(req, res, next));
+
 // Google OAuth Endpoints
 router.get(
     "/google",

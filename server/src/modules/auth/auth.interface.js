@@ -20,13 +20,22 @@
  */
 
 /**
+ * @typedef {Object} TokenPair
+ * @property {string} accessToken - Short-lived JWT (15 min) signed with JWT_SECRET
+ * @property {string} refreshToken - Long-lived JWT (7 days) signed with JWT_REFRESH_SECRET
+ */
+
+/**
  * @typedef {Object} AuthResponse
- * @property {string} token - JWT token
+ * @property {string} accessToken - Short-lived JWT access token (returned in JSON body)
  * @property {Object} user
  * @property {string} user.id - User ID
  * @property {string} user.name - User name
  * @property {string} user.email - User email
  * @property {string} user.role - User role
+ *
+ * Note: The refresh token is NOT included in the JSON response.
+ * It is set as an httpOnly secure cookie named "refreshToken".
  */
 
 export const AuthInterface = {
