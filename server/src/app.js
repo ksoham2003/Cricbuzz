@@ -4,6 +4,7 @@ import morgan from "morgan";
 import SecurityMiddleware from "./middleware/security.middleware.js";
 import googleOAuthMiddleware from "./middleware/googleOAuth.middleware.js";
 import authRouter from "./modules/auth/auth.routes.js";
+import commentaryRouter from "./modules/commentary/commentary.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 
@@ -25,6 +26,7 @@ function createApp() {
     })
 
     app.use("/api/auth", authRouter);
+    app.use("/api/commentary", commentaryRouter);
 
     app.use(errorHandler);
 
