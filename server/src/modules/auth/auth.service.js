@@ -59,8 +59,12 @@ export default class AuthService {
 
         const { accessToken, refreshToken } = this._generateTokens(newUser);
         await this._saveRefreshToken(newUser._id, refreshToken);
+        const { accessToken, refreshToken } = this._generateTokens(newUser);
+        await this._saveRefreshToken(newUser._id, refreshToken);
 
         return {
+            accessToken,
+            refreshToken,
             accessToken,
             refreshToken,
             user: {
@@ -85,8 +89,12 @@ export default class AuthService {
 
         const { accessToken, refreshToken } = this._generateTokens(user);
         await this._saveRefreshToken(user._id, refreshToken);
+        const { accessToken, refreshToken } = this._generateTokens(user);
+        await this._saveRefreshToken(user._id, refreshToken);
 
         return {
+            accessToken,
+            refreshToken,
             accessToken,
             refreshToken,
             user: {
@@ -166,6 +174,8 @@ export default class AuthService {
         return {
             accessToken,
             refreshToken,
+            accessToken,
+            refreshToken,
             user: {
                 id: user._id,
                 name: user.name,
@@ -173,6 +183,14 @@ export default class AuthService {
                 role: user.role
             }
         };
+    }
+
+    /**
+     * Logout: clear the stored refresh token so it can no longer be used.
+     * @param {string} userId
+     */
+    async logout(userId) {
+        await this.authRepository.clearRefreshToken(userId);
     }
 
     /**

@@ -25,6 +25,32 @@ class AuthController {
         });
     }
 
+    /**
+     * Helper to clear the refresh token cookie.
+     * @param {import("express").Response} res
+     */
+    _clearRefreshTokenCookie(res) {
+        res.clearCookie(appConstant.REFRESH_TOKEN_COOKIE_NAME, {
+            httpOnly: true,
+            secure: env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
+    }
+
+    /**
+     * Helper to set the refresh token as an httpOnly cookie on the response.
+     * @param {import("express").Response} res
+     * @param {string} refreshToken
+     */
+    _setRefreshTokenCookie(res, refreshToken) {
+        res.cookie(appConstant.REFRESH_TOKEN_COOKIE_NAME, refreshToken, {
+            httpOnly: true,
+            secure: env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: appConstant.REFRESH_TOKEN_COOKIE_MAX_AGE,
+        });
+    }
+
     _setAccessTokenCookie(res, accessToken) {
         res.cookie(appConstant.ACCESS_TOKEN_COOKIE_NAME, accessToken, {
             httpOnly: true,
