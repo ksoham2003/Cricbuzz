@@ -1,7 +1,9 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
+import AuthHook from "../../hooks/AuthHook";
 
 const Register = () => {
+    let { register, reset, handleSubmit, errors, registerSubmit, password } = AuthHook()
     return (
         <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
 
@@ -36,31 +38,70 @@ const Register = () => {
                 </div>
 
                 {/* Form */}
-                <form className="space-y-4">
+                <form
+                    onSubmit={data => handleSubmit(registerSubmit(data))}
+                    className="space-y-4">
 
                     <input
+                        {...register("name", {
+                            required: "Please enter name",
+                        })}
                         type="text"
                         placeholder="Full Name"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
+                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+
 
                     <input
+                        {...register("email", {
+                            required: "Please enter email",
+                            pattern: {
+                                value: /^\S+@\S+\.\S+$/,
+                                message: "Please enter a valid email"
+                            }
+                        })}
                         type="email"
                         placeholder="Email Address"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
 
                     <input
+                        {...register("password", {
+                            required: "Please enter password",
+                            minLength: {
+                                value: 6,
+                                message: "Password must be at least 6 characters"
+                            }
+                        })}
                         type="password"
                         placeholder="Password"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
 
+                    {errors.password && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.password.message}
+                        </p>
+                    )}
+
                     <input
+                        {...register("confirmPassword", {
+                            required: "Please confirm your password",
+                            validate: (value) =>
+                                value === password || "Password doesn't match"
+                        })}
                         type="password"
                         placeholder="Confirm Password"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
+
+                    {errors.confirmPassword && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.confirmPassword.message}
+                        </p>
+                    )}
 
                     <button
                         type="submit"
