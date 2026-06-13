@@ -1,8 +1,10 @@
 import AuthRepository from "./auth.repository.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import env from "../../config/env.js";
 import appConstant from "../../constant/app.constant.js";
+import { ApiError } from "../../utils/ApiError.js";
 
 export default class AuthService {
     constructor() {
@@ -17,11 +19,11 @@ export default class AuthService {
     _generateTokens(user) {
         const payload = { id: user._id, email: user.email, role: user.role };
 
-        const accessToken = jwt.sign(payload, env.JWT_SECRET, {
+        const accessToken = jwt.sign(payload, env.ACCESS_TOKEN_SECRET, {
             expiresIn: appConstant.ACCESS_TOKEN_EXPIRY,
         });
 
-        const refreshToken = jwt.sign(payload, env.JWT_REFRESH_SECRET, {
+        const refreshToken = jwt.sign(payload, env.REFRESH_TOKEN_SECRET, {
             expiresIn: appConstant.REFRESH_TOKEN_EXPIRY,
         });
 
@@ -34,7 +36,7 @@ export default class AuthService {
      * @param {string} refreshToken
      */
     async _saveRefreshToken(userId, refreshToken) {
-        const hashedToken = await bcrypt.hash(refreshToken, 10);
+        const hashedToken = await bcrypt.hash(refreshToken, appConstant.BCRYPT_SALT_ROUNDS);
         await this.authRepository.updateRefreshToken(userId, hashedToken);
     }
 
@@ -43,12 +45,10 @@ export default class AuthService {
 
         const existingUser = await this.authRepository.findByEmail(email);
         if (existingUser) {
-            const error = new Error("Email already registered");
-            error.statusCode = 400; // Or 409 Conflict
-            throw error;
+            throw new ApiError(400, "Email already registered");
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, appConstant.BCRYPT_SALT_ROUNDS);
 
         const newUser = await this.authRepository.create({
             name,
@@ -75,16 +75,12 @@ export default class AuthService {
     async login(email, password) {
         const user = await this.authRepository.findByEmail(email);
         if (!user) {
-            const error = new Error("Invalid email or password");
-            error.statusCode = 401;
-            throw error;
+            throw new ApiError(401, "Invalid email or password");
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            const error = new Error("Invalid email or password");
-            error.statusCode = 401;
-            throw error;
+            throw new ApiError(401, "Invalid email or password");
         }
 
         const { accessToken, refreshToken } = this._generateTokens(user);
@@ -106,8 +102,8 @@ export default class AuthService {
         let user = await this.authRepository.findByEmail(profile.email);
         if (!user) {
             // For Google OAuth users, we can generate a random password to satisfy database schema
-            const randomPassword = Math.random().toString(36).substring(2, 15);
-            const hashedPassword = await bcrypt.hash(randomPassword, 10);
+            const randomPassword = crypto.randomBytes(16).toString('hex');
+            const hashedPassword = await bcrypt.hash(randomPassword, appConstant.BCRYPT_SALT_ROUNDS);
             
             user = await this.authRepository.create({
                 name: profile.name || "Google User",
@@ -139,36 +135,28 @@ export default class AuthService {
      */
     async refreshAccessToken(incomingRefreshToken) {
         if (!incomingRefreshToken) {
-            const error = new Error("Refresh token is required");
-            error.statusCode = 401;
-            throw error;
+            throw new ApiError(401, "Refresh token is required");
         }
 
         // Verify the refresh token signature & expiry
         let decoded;
         try {
-            decoded = jwt.verify(incomingRefreshToken, env.JWT_REFRESH_SECRET);
+            decoded = jwt.verify(incomingRefreshToken, env.REFRESH_TOKEN_SECRET);
         } catch (err) {
-            const error = new Error("Invalid or expired refresh token");
-            error.statusCode = 401;
-            throw error;
+            throw new ApiError(401, "Invalid or expired refresh token");
         }
 
         // Find the user and validate the stored hashed token
         const user = await this.authRepository.findById(decoded.id);
         if (!user || !user.refreshToken) {
-            const error = new Error("Invalid refresh token");
-            error.statusCode = 401;
-            throw error;
+            throw new ApiError(401, "Invalid refresh token");
         }
 
         const isTokenValid = await bcrypt.compare(incomingRefreshToken, user.refreshToken);
         if (!isTokenValid) {
             // Potential token reuse detected — clear all tokens for safety
             await this.authRepository.clearRefreshToken(user._id);
-            const error = new Error("Refresh token reuse detected, please login again");
-            error.statusCode = 401;
-            throw error;
+            throw new ApiError(401, "Refresh token reuse detected, please login again");
         }
 
         // Rotate: generate a new pair and persist the new refresh token hash
@@ -187,10 +175,6 @@ export default class AuthService {
         };
     }
 
-    /**
-     * Logout: clear the stored refresh token so it can no longer be used.
-     * @param {string} userId
-     */
     async logout(userId) {
         await this.authRepository.clearRefreshToken(userId);
     }

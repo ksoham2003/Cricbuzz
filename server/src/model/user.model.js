@@ -9,6 +9,10 @@ const userSchema = new Schema(
     role: { type: String, enum: Object.values(ROLES), default: ROLES.SCORER },
     refreshToken: { type: String, default: null },
     isDeleted: { type: Boolean, default: false },
+    picture: {
+      type:String,
+      default: "https://px.pixxo.io/test/user.png"
+    }
   },
   { timestamps: true }
 )
