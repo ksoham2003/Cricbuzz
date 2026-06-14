@@ -2,4 +2,32 @@ export const ROLES = {
   SUPER_ADMIN: "SUPER_ADMIN",
   ADMIN: "ADMIN",
   SCORER: "SCORER",
-}
+};
+
+export const SERIES_STATUS = {
+  UPCOMING: "UPCOMING",
+  ONGOING: "ONGOING",
+  COMPLETED: "COMPLETED",
+  CANCELLED: "CANCELLED",
+};
+
+export const SERIES_FORMAT = {
+  T10: "T10",
+  T20: "T20",
+  ODI: "ODI",
+  TEST: "TEST",
+};
+
+export const COMMENTARY_TYPE = {
+  NORMAL: "NORMAL",
+  FOUR: "FOUR",
+  SIX: "SIX",
+  WICKET: "WICKET",
+  MILESTONE: "MILESTONE",
+};
+
+export const TEAM_STATUS = {
+  ACTIVE: "ACTIVE",
+  INACTIVE: "INACTIVE",
+};
+
