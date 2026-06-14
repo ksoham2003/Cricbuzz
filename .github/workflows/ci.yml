@@ -52,5 +52,12 @@ jobs:
         working-directory: server
 
       - name: Run Server Unit Tests
+        env:
+          GOOGLE_CLIENT_ID: "dummy-id"
+          GOOGLE_CLIENT_SECRET: "dummy-secret"
+          GOOGLE_CALLBACK_URL: "http://localhost:8000/api/auth/google/callback"
+          ACCESS_TOKEN_SECRET: "dummy-access-token-secret-for-testing-purposes"
+          REFRESH_TOKEN_SECRET: "dummy-refresh-token-secret-for-testing-purposes"
+          REDIRECT_URL: "http://localhost:5173"
         run: npm test
         working-directory: server
