@@ -87,6 +87,23 @@ class TeamController {
             .status(200)
             .json(new ApiResponse(200, null, "Team deleted successfully"));
     });
+
+    /**
+     * POST /api/teams/:id/logo
+     * Uploads/updates a team logo. Restricted to ADMIN and SUPER_ADMIN.
+     */
+    uploadTeamLogoController = asyncHandler(async (req, res) => {
+        if (!req.file) {
+            throw new ApiError(400, "Please upload a logo file");
+        }
+
+        const relativePath = `/uploads/${req.file.filename}`;
+        const updated = await this.teamService.updateTeamLogo(req.params.id, relativePath);
+
+        return res
+            .status(200)
+            .json(new ApiResponse(200, { team: updated }, "Team logo uploaded successfully"));
+    });
 }
 
 export default new TeamController();
