@@ -133,4 +133,15 @@ export default class TeamService {
 
         await this.teamRepository.deleteTeam(id);
     }
+
+    /**
+     * Update team logo.
+     * @param {string} id
+     * @param {string} logoPath
+     */
+    async updateTeamLogo(id, logoPath) {
+        await this.fetchTeamById(id);
+        const updated = await this.teamRepository.updateTeam(id, { logo: logoPath });
+        return updated;
+    }
 }
