@@ -178,4 +178,13 @@ export default class AuthService {
     async logout(userId) {
         await this.authRepository.clearRefreshToken(userId);
     }
+
+    async getCurrentUser(userId) {
+        const user = await this.authRepository.findById(userId);
+        if (!user || user.isDeleted) {
+            throw new ApiError(404, "User not found");
+        }
+        const { password, refreshToken, ...userWithoutSensitiveFields } = user;
+        return userWithoutSensitiveFields;
+    }
 }
