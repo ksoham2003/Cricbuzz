@@ -1,0 +1,18 @@
+{
+  "name": "cricbuzz-monorepo",
+  "version": "1.0.0",
+  "description": "Cricbuzz App Monorepo Root",
+  "private": true,
+  "scripts": {
+    "bootstrap": "npm install --prefix client && npm install --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "test:server": "npm test --prefix server",
+    "lint:client": "npm run lint --prefix client",
+    "build:client": "npm run build --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

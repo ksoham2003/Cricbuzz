@@ -3,7 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import AuthHook from "../../hooks/AuthHook";
 
 const Register = () => {
-    let { register, reset, handleSubmit, errors, registerSubmit, password } = AuthHook()
+    let { register, handleSubmit, errors, registerSubmit, password } = AuthHook()
     return (
         <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
 

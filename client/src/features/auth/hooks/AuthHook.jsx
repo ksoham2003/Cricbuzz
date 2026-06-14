@@ -14,7 +14,7 @@ let AuthHook = () => {
     }
 
     let registerSubmit = (data) => {
-        let res = registerApi(data)
+        registerApi(data)
         console.log("register successfully")
         reset()
     }
