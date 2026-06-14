@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form"
+import { registerApi } from "../api/AuthApi"
 
 let AuthHook = () => {
     let { register, reset, handleSubmit, formState: { errors }, watch } = useForm({
@@ -13,7 +14,7 @@ let AuthHook = () => {
     }
 
     let registerSubmit = (data) => {
-        console.log("this is data", data)
+        let res = registerApi(data)
         console.log("register successfully")
         reset()
     }
