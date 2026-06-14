@@ -5,7 +5,7 @@ import AuthHook from "../../hooks/AuthHook";
 
 const LoginPage = () => {
 
-    let { register, reset, handleSubmit, errors, loginSubmit } = AuthHook()
+    let { register, handleSubmit, errors, loginSubmit } = AuthHook()
 
     return (
         <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">

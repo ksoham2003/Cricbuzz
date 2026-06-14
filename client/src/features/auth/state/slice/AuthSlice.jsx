@@ -9,14 +9,14 @@ let authSlice = createSlice({
         isAuthenticated: false
     },
     reducers: {
-        addUser: (state, payload) => {
-            state.user = isAction.payload
+        addUser: (state, action) => {
+            state.user = action.payload
             state.isLoading = false
-            isAuthenticated = true
+            state.isAuthenticated = true
         }
     }
 })
 
-let { addUser } = authSlice.actions
+export let { addUser } = authSlice.actions
 
 export default authSlice.reducer
