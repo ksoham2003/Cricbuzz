@@ -121,6 +121,11 @@ class AuthController {
 
         return res.status(200).json(new ApiResponse(200, null, "Logged out successfully"));
     });
+
+    getMe = asyncHandler(async (req, res) => {
+        const user = await this.authService.getCurrentUser(req.user.id);
+        return res.status(200).json(new ApiResponse(200, { user }, "User profile retrieved successfully"));
+    });
 }
 
 export default new AuthController();
