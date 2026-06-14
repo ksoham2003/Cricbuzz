@@ -2,6 +2,9 @@ import AuthService from "./auth.service.js";
 import { registerSchema, loginSchema } from "./auth.validator.js";
 import env from "../../config/env.js";
 import appConstant from "../../constant/app.constant.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ApiResponse } from "../../utils/ApiResponse.js";
+import { ApiError } from "../../utils/ApiError.js";
 
 class AuthController {
     constructor() {
@@ -22,6 +25,15 @@ class AuthController {
         });
     }
 
+    _setAccessTokenCookie(res, accessToken) {
+        res.cookie(appConstant.ACCESS_TOKEN_COOKIE_NAME, accessToken, {
+            httpOnly: true,
+            secure: env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: appConstant.ACCESS_TOKEN_COOKIE_MAX_AGE,
+        });
+    }
+
     /**
      * Helper to clear the refresh token cookie.
      * @param {import("express").Response} res
@@ -34,138 +46,81 @@ class AuthController {
         });
     }
 
-    async register(req, res) {
-        try {
-            const validation = registerSchema.safeParse(req.body);
-            if (!validation.success) {
-                return res.status(400).json({
-                    success: false,
-                    message: validation.error.issues[0].message,
-                    errors: validation.error.issues
-                });
-            }
-
-            const result = await this.authService.register(validation.data);
-
-            this._setRefreshTokenCookie(res, result.refreshToken);
-
-            return res.status(201).json({
-                accessToken: result.accessToken,
-                user: result.user
-            });
-        } catch (error) {
-            if (error.message === "Email already registered") {
-                return res.status(error.statusCode || 400).json({
-                    success: false,
-                    message: error.message
-                });
-            }
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
-        }
+    _clearAccessTokenCookie(res) {
+        res.clearCookie(appConstant.ACCESS_TOKEN_COOKIE_NAME, {
+            httpOnly: true,
+            secure: env.NODE_ENV === "production",
+            sameSite: "strict",
+        });
     }
 
-    async login(req, res) {
-        try {
-            const validation = loginSchema.safeParse(req.body);
-            if (!validation.success) {
-                return res.status(400).json({
-                    success: false,
-                    message: validation.error.issues[0].message,
-                    errors: validation.error.issues
-                });
-            }
-
-            const { email, password } = validation.data;
-            const result = await this.authService.login(email, password);
-
-            this._setRefreshTokenCookie(res, result.refreshToken);
-
-            return res.status(200).json({
-                accessToken: result.accessToken,
-                user: result.user
-            });
-        } catch (error) {
-            if (error.message === "Invalid email or password") {
-                return res.status(error.statusCode || 401).json({
-                    success: false,
-                    message: error.message
-                });
-            }
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
+    register = asyncHandler(async (req, res) => {
+        const validation = registerSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ApiError(400, validation.error.issues[0].message, validation.error.issues);
         }
-    }
 
-    async googleAuth(req, res) {
-        try {
-            const profile = req.user;
-            if (!profile || !profile.email) {
-                return res.status(401).json({
-                    success: false,
-                    message: "Unauthorized"
-                });
-            }
-            const result = await this.authService.findOrCreateUser(profile);
+        const result = await this.authService.register(validation.data);
 
-            this._setRefreshTokenCookie(res, result.refreshToken);
+        this._setRefreshTokenCookie(res, result.refreshToken);
+        this._setAccessTokenCookie(res, result.accessToken);
 
-            return res.status(200).json({
-                accessToken: result.accessToken,
-                user: result.user
-            });
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
+        return res.status(201).json(new ApiResponse(201, { user: result.user }, "User registered successfully"));
+    });
+
+    login = asyncHandler(async (req, res) => {
+        const validation = loginSchema.safeParse(req.body);
+        if (!validation.success) {
+            throw new ApiError(400, validation.error.issues[0].message, validation.error.issues);
         }
-    }
 
-    async refresh(req, res) {
+        const { email, password } = validation.data;
+        const result = await this.authService.login(email, password);
+
+        this._setRefreshTokenCookie(res, result.refreshToken);
+        this._setAccessTokenCookie(res, result.accessToken);
+
+        return res.status(200).json(new ApiResponse(200, { user: result.user }, "Logged in successfully"));
+    });
+
+    googleAuth = asyncHandler(async (req, res) => {
+        const profile = req.user;
+        if (!profile || !profile.email) {
+            throw new ApiError(401, "Unauthorized Google Profile");
+        }
+        const result = await this.authService.findOrCreateUser(profile);
+
+        this._setRefreshTokenCookie(res, result.refreshToken);
+        this._setAccessTokenCookie(res, result.accessToken);
+
+        return res.status(200).json(new ApiResponse(200, { user: result.user }, "Google authenticated successfully"));
+    });
+
+    refresh = asyncHandler(async (req, res) => {
         try {
             const incomingRefreshToken = req.cookies[appConstant.REFRESH_TOKEN_COOKIE_NAME];
-
             const result = await this.authService.refreshAccessToken(incomingRefreshToken);
 
             this._setRefreshTokenCookie(res, result.refreshToken);
+            this._setAccessTokenCookie(res, result.accessToken);
 
-            return res.status(200).json({
-                accessToken: result.accessToken,
-                user: result.user
-            });
+            return res.status(200).json(new ApiResponse(200, { user: result.user }, "Token refreshed successfully"));
         } catch (error) {
             // Clear the cookie on any refresh failure so stale tokens don't persist
             this._clearRefreshTokenCookie(res);
-
-            return res.status(error.statusCode || 401).json({
-                success: false,
-                message: error.message
-            });
+            this._clearAccessTokenCookie(res);
+            throw error;
         }
-    }
+    });
 
-    async logout(req, res) {
-        try {
-            await this.authService.logout(req.user.id);
+    logout = asyncHandler(async (req, res) => {
+        await this.authService.logout(req.user.id);
 
-            this._clearRefreshTokenCookie(res);
+        this._clearRefreshTokenCookie(res);
+        this._clearAccessTokenCookie(res);
 
-            return res.status(200).json({
-                success: true,
-                message: "Logged out successfully"
-            });
-        } catch (error) {
-            return res.status(500).json({
-                success: false,
-                message: error.message
-            });
-        }
-    }
+        return res.status(200).json(new ApiResponse(200, null, "Logged out successfully"));
+    });
 }
 
 export default new AuthController();

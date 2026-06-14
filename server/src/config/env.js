@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import z from "zod";
 import appConstant from "../constant/app.constant.js";
 
-dotenv.config();
+dotenv.config(); // Trigger nodemon restart
 
 const envSchema = z.object({
     PORT: z.coerce.number().default(appConstant.PORT),
@@ -15,8 +15,9 @@ const envSchema = z.object({
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
     GOOGLE_CALLBACK_URL: z.string(),
-    JWT_SECRET: z.string(),
-    JWT_REFRESH_SECRET: z.string(),
+    ACCESS_TOKEN_SECRET: z.string(),
+    REFRESH_TOKEN_SECRET: z.string(),
+    REDIRECT_URL: z.string(),
     // JWT_SECRET_RESET_PASSWORD: z.string(),
     // JWT_SECRET_VERIFY_EMAIL: z.string(),
 });

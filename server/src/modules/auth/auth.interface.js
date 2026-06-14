@@ -21,8 +21,8 @@
 
 /**
  * @typedef {Object} TokenPair
- * @property {string} accessToken - Short-lived JWT (15 min) signed with JWT_SECRET
- * @property {string} refreshToken - Long-lived JWT (7 days) signed with JWT_REFRESH_SECRET
+ * @property {string} accessToken - Short-lived JWT (15 min) signed with ACCESS_TOKEN_SECRET
+ * @property {string} refreshToken - Long-lived JWT (7 days) signed with REFRESH_TOKEN_SECRET
  */
 
 /**

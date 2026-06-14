@@ -270,7 +270,7 @@ bcrypt.compare(
 ```javascript
 jwt.sign(
   payload,
-  process.env.JWT_SECRET,
+  process.env.ACCESS_TOKEN_SECRET,
   {
     expiresIn: "7d"
   }
@@ -360,7 +360,9 @@ authorize(
 # Environment Variables
 
 ```env
-JWT_SECRET=your_secret_key
+ACCESS_TOKEN_SECRET=your_secret_key
+
+REFRESH_TOKEN_SECRET=your_refresh_secret_key
 
 JWT_EXPIRES_IN=7d
 ```
