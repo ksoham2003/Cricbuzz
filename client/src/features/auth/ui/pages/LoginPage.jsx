@@ -1,7 +1,12 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
+import AuthHook from "../../hooks/AuthHook";
+
 
 const LoginPage = () => {
+
+    let { register, reset, handleSubmit, errors, loginSubmit } = AuthHook()
+
     return (
         <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
 
@@ -42,23 +47,41 @@ const LoginPage = () => {
                 </div>
 
                 {/* Form */}
-                <form className="space-y-4">
+                <form
+                    onSubmit={handleSubmit(loginSubmit)}
+                    className="space-y-4">
 
                     <input
+                        {...register("email", {
+                            required: "Please enter email",
+                            pattern: {
+                                value: /^\S+@\S+\.\S+$/,
+                                message: "Please enter a valid email"
+                            }
+                        })}
                         type="email"
                         placeholder="Email Address"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+
 
                     <input
+                        {...register("password", {
+                            required: "Please enter password",
+                            minLength: {
+                                value: 6,
+                                message: "Password must be at least 6 characters"
+                            }
+                        })}
                         type="password"
                         placeholder="Password"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
+                    {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
 
                     <div className="flex justify-end">
                         <button
-                            type="button"
                             className="text-sm text-green-600 hover:text-green-700"
                         >
                             Forgot Password?
@@ -66,7 +89,6 @@ const LoginPage = () => {
                     </div>
 
                     <button
-                        type="submit"
                         className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
                     >
                         Login
