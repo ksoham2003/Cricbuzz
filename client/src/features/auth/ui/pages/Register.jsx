@@ -39,7 +39,7 @@ const Register = () => {
 
                 {/* Form */}
                 <form
-                    onSubmit={data => handleSubmit(registerSubmit(data))}
+                    onSubmit={handleSubmit(registerSubmit)}
                     className="space-y-4">
 
                     <input
@@ -104,7 +104,6 @@ const Register = () => {
                     )}
 
                     <button
-                        type="submit"
                         className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
                     >
                         Create Account

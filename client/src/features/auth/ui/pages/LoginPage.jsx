@@ -48,7 +48,7 @@ const LoginPage = () => {
 
                 {/* Form */}
                 <form
-                    onSubmit={data => handleSubmit(loginSubmit(data))}
+                    onSubmit={handleSubmit(loginSubmit)}
                     className="space-y-4">
 
                     <input

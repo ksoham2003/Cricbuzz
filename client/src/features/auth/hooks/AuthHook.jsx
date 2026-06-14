@@ -7,16 +7,14 @@ let AuthHook = () => {
     const password = watch("password")
 
     let loginSubmit = (data) => {
-        data.preventDefault()
         console.log("this is data", data)
         console.log("login successfully")
         reset()
     }
 
     let registerSubmit = (data) => {
-        data.preventDefault()
         console.log("this is data", data)
-        console.log("login successfully")
+        console.log("register successfully")
         reset()
     }
 
