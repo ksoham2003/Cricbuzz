@@ -1,7 +1,21 @@
 import { AxiosInstance } from "../../../config/AxiosInstance"
 
-
 export let registerApi = async (data) => {
     let res = await AxiosInstance.post("/auth/register", data)
-    console.log("register successfully and this is res--->", res)
+    return res.data.data.user
+}
+
+export let loginApi = async (data) => {
+    let res = await AxiosInstance.post("/auth/login", data)
+    return res.data.data.user
+}
+
+export let logoutApi = async () => {
+    let res = await AxiosInstance.post("/auth/logout")
+    return res.data
+}
+
+export let getMeApi = async () => {
+    let res = await AxiosInstance.get("/auth/me")
+    return res.data.data.user
 }

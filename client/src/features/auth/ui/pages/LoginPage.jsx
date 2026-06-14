@@ -1,11 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { Link } from "react-router";
 import AuthHook from "../../hooks/AuthHook";
 
-
 const LoginPage = () => {
+    let { register, handleSubmit, errors, loginSubmit, error, isLoading, clearError } = AuthHook()
 
-    let { register, handleSubmit, errors, loginSubmit } = AuthHook()
+    useEffect(() => {
+        // Clear auth errors when navigating/mounting this page
+        clearError();
+        return () => clearError();
+    }, []);
+
+    const handleGoogleLogin = () => {
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+        window.location.href = `${apiUrl}/auth/google`;
+    };
 
     return (
         <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
@@ -29,6 +39,8 @@ const LoginPage = () => {
 
                 {/* Google Login */}
                 <button
+                    onClick={handleGoogleLogin}
+                    type="button"
                     className="w-full border border-gray-300 rounded-xl py-3 flex items-center justify-center gap-3 hover:bg-gray-50 transition"
                 >
                     <FcGoogle size={24} />
@@ -45,6 +57,13 @@ const LoginPage = () => {
                     </span>
                     <div className="flex-1 h-px bg-gray-300"></div>
                 </div>
+
+                {/* API Error Display */}
+                {error && (
+                    <div className="bg-red-50 text-red-600 border border-red-200 rounded-xl p-3 text-sm text-center mb-4">
+                        {error}
+                    </div>
+                )}
 
                 {/* Form */}
                 <form
@@ -82,6 +101,7 @@ const LoginPage = () => {
 
                     <div className="flex justify-end">
                         <button
+                            type="button"
                             className="text-sm text-green-600 hover:text-green-700"
                         >
                             Forgot Password?
@@ -89,9 +109,11 @@ const LoginPage = () => {
                     </div>
 
                     <button
-                        className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
+                        type="submit"
+                        disabled={isLoading}
+                        className={`w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                     >
-                        Login
+                        {isLoading ? "Signing in..." : "Login"}
                     </button>
 
                 </form>
@@ -99,9 +121,9 @@ const LoginPage = () => {
                 {/* Footer */}
                 <p className="text-center text-gray-500 mt-6">
                     Don't have an account?{" "}
-                    <span className="text-green-600 font-medium cursor-pointer">
+                    <Link to="/register" className="text-green-600 font-medium hover:underline">
                         Register
-                    </span>
+                    </Link>
                 </p>
 
             </div>
