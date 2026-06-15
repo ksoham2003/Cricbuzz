@@ -1,15 +1,18 @@
 import { useForm } from "react-hook-form"
 import { loginApi, registerApi } from "../api/AuthApi"
+import { useDispatch } from "react-redux"
+import { logInThunk } from "../state/thunk/LoginThunk"
 
 let AuthHook = () => {
     let { register, reset, handleSubmit, formState: { errors }, watch } = useForm({
         mode: "onChange",
     })
     const password = watch("password")
+    let dispatch = useDispatch()
 
     let loginSubmit = async (data) => {
-        let user = await loginApi(data)
-        console.log("user", user)
+        dispatch(logInThunk(data))
+        console.log("user logged in")
         reset()
     }
 
