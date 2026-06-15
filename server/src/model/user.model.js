@@ -5,12 +5,12 @@ const userSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    password: { type: String, required: true },
+    password: { type: String },
     role: { type: String, enum: Object.values(ROLES), default: ROLES.SCORER },
     refreshToken: { type: String, default: null },
     isDeleted: { type: Boolean, default: false },
     picture: {
-      type:String,
+      type: String,
       default: "https://px.pixxo.io/test/user.png"
     }
   },

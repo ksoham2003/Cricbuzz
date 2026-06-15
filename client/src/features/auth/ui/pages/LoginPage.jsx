@@ -70,15 +70,25 @@ const LoginPage = () => {
                         {...register("password", {
                             required: "Please enter password",
                             minLength: {
-                                value: 6,
-                                message: "Password must be at least 6 characters"
+                                value: 8,
+                                message: "Password must be at least 8 characters"
+                            },
+                            pattern: {
+                                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                                message:
+                                    "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
                             }
                         })}
                         type="password"
                         placeholder="Password"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
-                    {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+
+                    {errors.password && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.password.message}
+                        </p>
+                    )}
 
                     <div className="flex justify-end">
                         <button
