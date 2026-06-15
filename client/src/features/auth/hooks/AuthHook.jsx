@@ -17,8 +17,8 @@ let AuthHook = () => {
     }
 
     let registerSubmit = async (data) => {
-        let user = await registerApi(data)
-        console.log("user-->", user)
+        await registerApi(data)
+        console.log("user register successfully")
         reset()
     }
 
