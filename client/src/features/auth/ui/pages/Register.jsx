@@ -16,10 +16,9 @@ const Register = () => {
   } = AuthHook();
 
   useEffect(() => {
-    // Clear auth errors when navigating/mounting this page
     clearError();
     return () => clearError();
-  }, []);
+  }, [clearError]);
 
   const handleGoogleLogin = () => {
     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
