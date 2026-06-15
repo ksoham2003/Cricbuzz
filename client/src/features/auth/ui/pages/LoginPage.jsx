@@ -1,7 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
+import { Link } from "react-router";
+import AuthHook from "../../hooks/AuthHook";
 
 const LoginPage = () => {
+    let { register, handleSubmit, errors, loginSubmit, error, isLoading, clearError } = AuthHook()
+
+    useEffect(() => {
+        // Clear auth errors when navigating/mounting this page
+        clearError();
+        return () => clearError();
+    }, []);
+
+    const handleGoogleLogin = () => {
+        const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+        window.location.href = `${apiUrl}/auth/google`;
+    };
+
     return (
         <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
 
@@ -24,6 +39,8 @@ const LoginPage = () => {
 
                 {/* Google Login */}
                 <button
+                    onClick={handleGoogleLogin}
+                    type="button"
                     className="w-full border border-gray-300 rounded-xl py-3 flex items-center justify-center gap-3 hover:bg-gray-50 transition"
                 >
                     <FcGoogle size={24} />
@@ -41,20 +58,46 @@ const LoginPage = () => {
                     <div className="flex-1 h-px bg-gray-300"></div>
                 </div>
 
+                {/* API Error Display */}
+                {error && (
+                    <div className="bg-red-50 text-red-600 border border-red-200 rounded-xl p-3 text-sm text-center mb-4">
+                        {error}
+                    </div>
+                )}
+
                 {/* Form */}
-                <form className="space-y-4">
+                <form
+                    onSubmit={handleSubmit(loginSubmit)}
+                    className="space-y-4">
 
                     <input
+                        {...register("email", {
+                            required: "Please enter email",
+                            pattern: {
+                                value: /^\S+@\S+\.\S+$/,
+                                message: "Please enter a valid email"
+                            }
+                        })}
                         type="email"
                         placeholder="Email Address"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+
 
                     <input
+                        {...register("password", {
+                            required: "Please enter password",
+                            minLength: {
+                                value: 6,
+                                message: "Password must be at least 6 characters"
+                            }
+                        })}
                         type="password"
                         placeholder="Password"
                         className="w-full border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-500"
                     />
+                    {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
 
                     <div className="flex justify-end">
                         <button
@@ -67,9 +110,10 @@ const LoginPage = () => {
 
                     <button
                         type="submit"
-                        className="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition"
+                        disabled={isLoading}
+                        className={`w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition ${isLoading ? "opacity-70 cursor-not-allowed" : ""}`}
                     >
-                        Login
+                        {isLoading ? "Signing in..." : "Login"}
                     </button>
 
                 </form>
@@ -77,9 +121,9 @@ const LoginPage = () => {
                 {/* Footer */}
                 <p className="text-center text-gray-500 mt-6">
                     Don't have an account?{" "}
-                    <span className="text-green-600 font-medium cursor-pointer">
+                    <Link to="/register" className="text-green-600 font-medium hover:underline">
                         Register
-                    </span>
+                    </Link>
                 </p>
 
             </div>

@@ -20,10 +20,7 @@ router.post("/login", authLimiter, (req, res, next) => AuthController.login(req,
 // Token Management Endpoints
 router.post("/refresh", (req, res, next) => AuthController.refresh(req, res, next));
 router.post("/logout", authenticate, (req, res, next) => AuthController.logout(req, res, next));
-
-// Token Management Endpoints
-router.post("/refresh", (req, res, next) => AuthController.refresh(req, res, next));
-router.post("/logout", authenticate, (req, res, next) => AuthController.logout(req, res, next));
+router.get("/me", authenticate, (req, res, next) => AuthController.getMe(req, res, next));
 
 // Google OAuth Endpoints
 router.get(
