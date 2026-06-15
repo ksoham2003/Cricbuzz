@@ -4,11 +4,8 @@ import { respondSuccess, respondPaginated } from "../shared/respond.js";
 import { responseCache } from "../cache/responseCache.js";
 import { ensureId, pagination, paginationMeta } from "../shared/query.js";
 import { ApiError } from "../../../utils/ApiError.js";
-
-/**
- * Placeholder: Match model not yet fully implemented
- * These endpoints are stubs for the public API structure
- */
+import Match from "../../match/match.model.js";
+import Score from "../../score/score.model.js";
 
 /**
  * GET /api/matches
@@ -18,14 +15,21 @@ const getAllMatches = asyncHandler(async (req, res) => {
     const { page, limit, skip } = pagination(req.query);
     const { series, status } = req.query;
 
-    // Filter placeholder
     const filter = { isDeleted: false };
     if (series) filter.seriesId = series;
     if (status) filter.status = status;
 
-    // Placeholder: Awaiting Match model implementation
-    const matches = [];
-    const total = 0;
+    const [matches, total] = await Promise.all([
+        Match.find(filter)
+            .populate("seriesId", "name shortName logo status format")
+            .populate("team1", "name shortName logo primaryColor")
+            .populate("team2", "name shortName logo primaryColor")
+            .sort({ startTime: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(),
+        Match.countDocuments(filter),
+    ]);
 
     res.status(200).json(
         respondPaginated(matches, paginationMeta(page, limit, total), "Matches retrieved successfully")
@@ -39,8 +43,27 @@ const getAllMatches = asyncHandler(async (req, res) => {
 const getMatchById = asyncHandler(async (req, res) => {
     const matchId = ensureId(req.params.id, "match ID");
 
-    // Placeholder: Awaiting Match model implementation
-    throw new ApiError(404, "Match not found");
+    const match = await Match.findById(matchId)
+        .populate("seriesId", "name shortName logo status format startDate endDate")
+        .populate("team1", "name shortName logo primaryColor secondaryColor city")
+        .populate("team2", "name shortName logo primaryColor secondaryColor city")
+        .populate("tossWinner", "name shortName logo")
+        .populate("winner", "name shortName logo")
+        .populate("playingXI.team1.player", "firstName lastName fullName role jerseyNumber profileImage")
+        .populate("playingXI.team2.player", "firstName lastName fullName role jerseyNumber profileImage")
+        .lean();
+
+    if (!match) {
+        throw new ApiError(404, "Match not found");
+    }
+
+    const scores = await Score.find({ matchId, isDeleted: false })
+        .populate("battingTeam", "name shortName logo")
+        .lean();
+
+    res.status(200).json(
+        respondSuccess({ match, scores }, "Match details retrieved successfully")
+    );
 });
 
 /**
@@ -50,16 +73,31 @@ const getMatchById = asyncHandler(async (req, res) => {
 const getMatchScorecard = asyncHandler(async (req, res) => {
     const matchId = ensureId(req.params.id, "match ID");
 
-    // Placeholder: Awaiting Score module implementation
-    const scorecard = {
-        matchId,
-        team1: { name: "", score: 0, wickets: 0 },
-        team2: { name: "", score: 0, wickets: 0 },
-        players: [],
-    };
+    const match = await Match.findById(matchId)
+        .populate("seriesId", "name shortName logo status format")
+        .populate("team1", "name shortName logo primaryColor secondaryColor city")
+        .populate("team2", "name shortName logo primaryColor secondaryColor city")
+        .populate("playingXI.team1.player", "firstName lastName fullName role jerseyNumber profileImage")
+        .populate("playingXI.team2.player", "firstName lastName fullName role jerseyNumber profileImage")
+        .lean();
+
+    if (!match) {
+        throw new ApiError(404, "Match not found");
+    }
+
+    const scores = await Score.find({ matchId, isDeleted: false })
+        .populate("battingTeam", "name shortName logo")
+        .lean();
+
+    const innings1 = scores.find(s => s.innings === 1) || null;
+    const innings2 = scores.find(s => s.innings === 2) || null;
 
     res.status(200).json(
-        respondSuccess(scorecard, "Match scorecard retrieved successfully")
+        respondSuccess({
+            match,
+            innings1,
+            innings2,
+        }, "Match scorecard retrieved successfully")
     );
 });
 
@@ -70,11 +108,36 @@ const getMatchScorecard = asyncHandler(async (req, res) => {
 const getMatchCenter = asyncHandler(async (req, res) => {
     const matchId = ensureId(req.params.id, "match ID");
 
-    // Placeholder: Awaiting real-time implementation
+    const match = await Match.findById(matchId)
+        .populate("seriesId", "name shortName logo status format")
+        .populate("team1", "name shortName logo primaryColor secondaryColor city")
+        .populate("team2", "name shortName logo primaryColor secondaryColor city")
+        .populate("tossWinner", "name shortName logo")
+        .populate("winner", "name shortName logo")
+        .populate("playingXI.team1.player", "firstName lastName fullName role jerseyNumber profileImage")
+        .populate("playingXI.team2.player", "firstName lastName fullName role jerseyNumber profileImage")
+        .lean();
+
+    if (!match) {
+        throw new ApiError(404, "Match not found");
+    }
+
+    const scores = await Score.find({ matchId, isDeleted: false })
+        .populate("battingTeam", "name shortName logo")
+        .lean();
+
+    // Live score is the latest innings score
+    let liveScore = null;
+    if (scores.length > 0) {
+        liveScore = scores.reduce((prev, current) => (prev.innings > current.innings) ? prev : current);
+    }
+
     const center = {
-        matchId,
-        status: "not_started",
-        current: {},
+        matchInfo: match,
+        liveScore,
+        scores,
+        playingXI: match.playingXI,
+        result: match.result,
     };
 
     res.status(200).json(
