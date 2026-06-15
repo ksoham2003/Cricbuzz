@@ -1,6 +1,7 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import AuthHook from "../../hooks/AuthHook";
+import { loginWithGoogle } from "../../api/AuthApi";
 
 
 const LoginPage = () => {
@@ -29,6 +30,7 @@ const LoginPage = () => {
 
                 {/* Google Login */}
                 <button
+                    onClick={loginWithGoogle}
                     className="w-full border border-gray-300 rounded-xl py-3 flex items-center justify-center gap-3 hover:bg-gray-50 transition"
                 >
                     <FcGoogle size={24} />
