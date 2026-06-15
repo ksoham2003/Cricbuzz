@@ -50,8 +50,7 @@ const TeamRow = ({ team, isWinner = false }) => (
 );
 
 const MatchCard = ({ match, className = "" }) => {
-  const { format, status, series, venue, team1, team2, note, matchTime, id } =
-    match;
+  const { format, status, series, team1, team2, note, matchTime, id } = match;
 
   const isLive = status === "LIVE";
   const isResult = status === "RESULT";
@@ -75,10 +74,7 @@ const MatchCard = ({ match, className = "" }) => {
         {/* Header row */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Badge
-              variant={STATUS_VARIANT[status] || "default"}
-              pulse={isLive}
-            >
+            <Badge variant={STATUS_VARIANT[status] || "default"} pulse={isLive}>
               {status}
             </Badge>
             <Badge variant={FORMAT_VARIANT[format] || "default"}>
@@ -94,8 +90,14 @@ const MatchCard = ({ match, className = "" }) => {
 
         {/* Team rows */}
         <div className="divide-y divide-gray-50">
-          <TeamRow team={team1} isWinner={isResult && team1.score > team2.score} />
-          <TeamRow team={team2} isWinner={isResult && team2.score > team1.score} />
+          <TeamRow
+            team={team1}
+            isWinner={isResult && team1.score > team2.score}
+          />
+          <TeamRow
+            team={team2}
+            isWinner={isResult && team2.score > team1.score}
+          />
         </div>
 
         {/* Divider */}
@@ -107,8 +109,8 @@ const MatchCard = ({ match, className = "" }) => {
                 isLive
                   ? "text-red-500"
                   : isResult
-                  ? "text-green-600"
-                  : "text-gray-500"
+                    ? "text-green-600"
+                    : "text-gray-500"
               }`}
             >
               {note}

@@ -7,10 +7,9 @@ const LoginPage = () => {
     let { register, handleSubmit, errors, loginSubmit, error, isLoading, clearError } = AuthHook()
 
     useEffect(() => {
-        // Clear auth errors when navigating/mounting this page
         clearError();
         return () => clearError();
-    }, []);
+    }, [clearError]);
 
     const handleGoogleLogin = () => {
         const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
