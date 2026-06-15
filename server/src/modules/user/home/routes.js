@@ -2,25 +2,57 @@ import express from "express";
 import { asyncHandler } from "../../../utils/asyncHandler.js";
 import { respondSuccess } from "../shared/respond.js";
 import { responseCache } from "../cache/responseCache.js";
-import { default as SeriesModel } from "../../series/series.model.js";
+import Match from "../../match/match.model.js";
 
 /**
  * GET /api/home
- * Returns home page data with featured content
+ * Returns home page data with featured content: live, upcoming, and recent matches.
  */
 const getHome = asyncHandler(async (req, res) => {
-    const recentSeries = await SeriesModel.find({ isDeleted: false })
-        .select("name shortName description status format logo startDate endDate")
-        .sort({ createdAt: -1 })
-        .limit(5)
-        .lean();
+    const [liveMatches, upcomingMatches, recentMatches] = await Promise.all([
+        // 1. Live & Innings Break matches
+        Match.find({
+            status: { $in: ["LIVE", "INNINGS_BREAK"] },
+            isDeleted: false,
+        })
+            .populate("seriesId", "name shortName logo status format")
+            .populate("team1", "name shortName logo primaryColor")
+            .populate("team2", "name shortName logo primaryColor")
+            .sort({ startTime: -1 })
+            .limit(10)
+            .lean(),
 
-    const totalSeries = await SeriesModel.countDocuments({ isDeleted: false });
+        // 2. Upcoming matches (UPCOMING, TOSS_COMPLETED, PLAYING_XI_SELECTED)
+        Match.find({
+            status: { $in: ["UPCOMING", "TOSS_COMPLETED", "PLAYING_XI_SELECTED"] },
+            isDeleted: false,
+        })
+            .populate("seriesId", "name shortName logo status format")
+            .populate("team1", "name shortName logo primaryColor")
+            .populate("team2", "name shortName logo primaryColor")
+            .sort({ startTime: 1 })
+            .limit(10)
+            .lean(),
+
+        // 3. Completed matches
+        Match.find({
+            status: "COMPLETED",
+            isDeleted: false,
+        })
+            .populate("seriesId", "name shortName logo status format")
+            .populate("team1", "name shortName logo primaryColor")
+            .populate("team2", "name shortName logo primaryColor")
+            .populate("winner", "name shortName logo")
+            .sort({ startTime: -1 })
+            .limit(10)
+            .lean(),
+    ]);
 
     res.status(200).json(
         respondSuccess({
-            recentSeries,
-            totalSeries,
+            liveMatches,
+            upcomingMatches,
+            recentMatches,
         }, "Home data retrieved successfully")
     );
 });
