@@ -1,10 +1,8 @@
-import React from 'react'
-import { Outlet } from 'react-router'
+import React from "react";
+import { Outlet } from "react-router";
 
 const MainLayout = () => {
-    return (
-        <Outlet />
-    )
-}
+  return <Outlet />;
+};
 
-export default MainLayout
+export default MainLayout;
