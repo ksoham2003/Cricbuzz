@@ -14,8 +14,8 @@ class UserController {
      * Get all active users (SUPER_ADMIN only)
      */
     getAllUsers = asyncHandler(async (req, res) => {
-        const { page, limit } = req.query;
-        const result = await this.userService.getAllUsers({ page, limit });
+        const { page, limit, search, role, status } = req.query;
+        const result = await this.userService.getAllUsers({ page, limit, search, role, status });
 
         res.status(200).json(
             new ApiResponse(200, result, "Users retrieved successfully")
@@ -60,7 +60,7 @@ class UserController {
             throw new ApiError(400, validation.error.issues[0].message);
         }
 
-        const result = await this.userService.deleteUser(req.params.id);
+        const result = await this.userService.deleteUser(req.params.id, req.user.id);
         res.status(200).json(new ApiResponse(200, result, "User deleted successfully"));
     });
 
