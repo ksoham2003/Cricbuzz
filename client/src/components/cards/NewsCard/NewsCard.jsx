@@ -44,7 +44,9 @@ const NewsCard = ({ article, className = "", compact = false }) => {
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-green-600 font-semibold mb-1">{category}</p>
+          <p className="text-xs text-green-600 font-semibold mb-1">
+            {category}
+          </p>
           <p className="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-green-700 transition-colors">
             {title}
           </p>
