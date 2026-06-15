@@ -11,6 +11,8 @@ export const createUserSchema = z.object({
 export const updateUserSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters").trim().optional(),
     picture: z.string().url("Invalid URL").optional(),
+    role: z.enum(Object.values(ROLES)).optional(),
+    status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
 }).strict();
 
 export const userIdSchema = z.object({
