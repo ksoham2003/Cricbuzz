@@ -13,5 +13,5 @@ export let loginApi = async (data) => {
 
 
 export let loginWithGoogle = async () => {
-    window.location.href = "http://localhost:8000/api/auth/google";
+    window.location.href = "https://cricbuzz-wrdx.onrender.com/api/auth/google";
 }
