@@ -65,9 +65,8 @@ const seriesSchema = new mongoose.Schema(
 );
 
 // Exclude soft-deleted documents from all default queries
-seriesSchema.pre(/^find/, function (next) {
+seriesSchema.pre(/^find/, function () {
     this.where({ isDeleted: false });
-    next();
 });
 
 const Series = mongoose.model("Series", seriesSchema);
