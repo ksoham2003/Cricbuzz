@@ -115,4 +115,60 @@ export default class PlayingXiService {
 
         return populatedMatch;
     }
+
+    /**
+     * Get playing XI for a match
+     * @param {string} matchId
+     */
+    async getPlayingXi(matchId) {
+        if (!mongoose.isObjectIdOrHexString(matchId)) {
+            throw new ApiError(400, "Invalid match ID format");
+        }
+
+        const match = await Match.findById(matchId)
+            .select("playingXI")
+            .populate("playingXI.team1.player", "firstName lastName fullName role jerseyNumber profileImage")
+            .populate("playingXI.team2.player", "firstName lastName fullName role jerseyNumber profileImage")
+            .lean();
+
+        if (!match) {
+            throw new ApiError(404, "Match not found");
+        }
+
+        if (!match.playingXI || !match.playingXI.team1 || !match.playingXI.team2) {
+            return null;
+        }
+
+        return match.playingXI;
+    }
+
+    /**
+     * Get playing XI for a specific team in a match
+     * @param {string} matchId
+     * @param {string} teamNumber - "1" or "2"
+     */
+    async getTeamPlayingXi(matchId, teamNumber) {
+        if (!mongoose.isObjectIdOrHexString(matchId)) {
+            throw new ApiError(400, "Invalid match ID format");
+        }
+
+        const match = await Match.findById(matchId)
+            .select("playingXI")
+            .populate(
+                teamNumber === "1" ? "playingXI.team1.player" : "playingXI.team2.player",
+                "firstName lastName fullName role jerseyNumber profileImage"
+            )
+            .lean();
+
+        if (!match) {
+            throw new ApiError(404, "Match not found");
+        }
+
+        const teamKey = `team${teamNumber}`;
+        if (!match.playingXI || !match.playingXI[teamKey]) {
+            return null;
+        }
+
+        return match.playingXI[teamKey];
+    }
 }

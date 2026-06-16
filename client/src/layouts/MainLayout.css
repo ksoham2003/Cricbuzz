@@ -1,0 +1,139 @@
+@reference "tailwindcss";
+
+@layer components {
+  .app-frame {
+    @apply min-h-screen bg-slate-50 text-slate-950;
+  }
+
+  .site-header {
+    @apply sticky top-0 z-20 grid min-h-[72px] grid-cols-[auto_1fr_auto] items-center gap-5 border-b border-slate-200 bg-white/95 px-8 shadow-sm backdrop-blur-xl;
+  }
+
+  .brand {
+    @apply inline-flex items-center gap-3 text-slate-950 no-underline;
+  }
+
+  .brand-mark {
+    @apply grid h-11 w-11 place-items-center rounded-lg bg-gradient-to-br from-emerald-700 to-teal-500 text-sm font-black text-white shadow-sm;
+  }
+
+  .brand strong,
+  .brand small {
+    @apply block;
+  }
+
+  .brand strong {
+    @apply text-base font-black;
+  }
+
+  .brand small {
+    @apply mt-0.5 text-xs font-semibold text-slate-500;
+  }
+
+  .primary-nav {
+    @apply flex justify-center gap-1;
+  }
+
+  .primary-nav a {
+    @apply rounded-md px-3 py-2 text-sm font-extrabold text-slate-600 no-underline transition hover:bg-emerald-50 hover:text-emerald-800;
+  }
+
+  .primary-nav a.active {
+    @apply bg-emerald-50 text-emerald-800;
+  }
+
+  .account-actions {
+    @apply flex items-center gap-2;
+  }
+
+  .profile-pill {
+    @apply inline-flex items-center gap-2 text-sm font-black text-slate-950 no-underline;
+  }
+
+  .profile-pill span {
+    @apply grid h-9 w-9 place-items-center rounded-full bg-slate-900 text-white;
+  }
+
+  .menu-button {
+    @apply hidden flex-col gap-1;
+    display: none !important;
+  }
+
+  .menu-button span {
+    @apply h-0.5 w-5 bg-current;
+  }
+
+  .site-footer {
+    @apply grid gap-8 border-t border-slate-200 bg-slate-950 px-8 py-10 text-sm font-medium text-slate-300 md:grid-cols-[1.4fr_1fr_auto];
+  }
+
+  .site-footer p {
+    @apply mt-4 max-w-xl leading-7 text-slate-400;
+  }
+
+  .footer-brand {
+    @apply inline-flex items-center gap-3 text-white no-underline;
+  }
+
+  .footer-brand .brand-mark {
+    @apply h-10 w-10;
+  }
+
+  .footer-brand strong,
+  .footer-brand small {
+    @apply block;
+  }
+
+  .footer-brand strong {
+    @apply text-base font-black;
+  }
+
+  .footer-brand small {
+    @apply text-xs font-semibold text-slate-400;
+  }
+
+  .footer-links {
+    @apply grid grid-cols-2 gap-3 md:justify-self-center;
+  }
+
+  .footer-links a {
+    @apply font-extrabold text-slate-300 no-underline transition hover:text-emerald-300;
+  }
+
+  .footer-meta {
+    @apply flex flex-col gap-2 text-slate-400 md:items-end;
+  }
+
+  @media (max-width: 860px) {
+    .site-header {
+      @apply grid-cols-[1fr_auto] gap-3 px-4;
+    }
+
+    .menu-button {
+      @apply inline-flex;
+      display: inline-flex !important;
+    }
+
+    .primary-nav,
+    .account-actions {
+      @apply col-span-full hidden;
+    }
+
+    .primary-nav.open,
+    .account-actions.open {
+      @apply flex;
+    }
+
+    .primary-nav {
+      @apply flex-col items-stretch pt-2;
+    }
+
+    .account-actions {
+      @apply flex-col items-stretch pb-4;
+    }
+
+    .site-footer {
+      @apply grid-cols-1 px-5 py-8;
+    }
+  }
+}
