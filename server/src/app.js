@@ -12,6 +12,7 @@ import teamRouter from "./modules/team/team.routes.js";
 import playerRouter from "./modules/player/player.routes.js";
 import squadRouter from "./modules/squad/squad.routes.js";
 import matchRouter from "./modules/match/match.routes.js";
+import playingXiRouter from "./modules/playing-xi/playing-xi.routes.js";
 import scoreRouter from "./modules/score/score.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
@@ -37,14 +38,20 @@ function createApp() {
 
     app.use("/api/auth", authRouter);
     app.use("/api/users", userAdminRouter);
+
+    // Public user-facing routes (GET-only, no auth) — must come before admin
+    // match/score routers to prevent route shadowing on GET /api/matches etc.
+    app.use("/api", userPublicRouter);
+
+    // Admin/protected routes
     app.use("/api/series", seriesRouter);
     app.use("/api/commentary", commentaryRouter);
     app.use("/api/teams", teamRouter);
     app.use("/api/players", playerRouter);
     app.use("/api/squads", squadRouter);
     app.use("/api/matches", matchRouter);
+    app.use("/api/playing-xi", playingXiRouter);
     app.use("/api/scores", scoreRouter);
-    app.use("/api", userPublicRouter);
 
     app.use(errorHandler);
 

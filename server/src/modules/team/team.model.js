@@ -92,9 +92,8 @@ const teamSchema = new mongoose.Schema(
 );
 
 // Exclude soft-deleted documents from all default queries
-teamSchema.pre(/^find/, function (next) {
+teamSchema.pre(/^find/, function () {
     this.where({ isDeleted: false });
-    next();
 });
 
 // Unique team name within a series (name + seriesId compound unique)
