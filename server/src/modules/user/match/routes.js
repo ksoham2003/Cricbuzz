@@ -17,7 +17,7 @@ const getAllMatches = asyncHandler(async (req, res) => {
 
     const filter = { isDeleted: false };
     if (series) filter.seriesId = series;
-    if (status) filter.status = status;
+    if (status) filter.status = String(status).toUpperCase();
 
     const [matches, total] = await Promise.all([
         Match.find(filter)

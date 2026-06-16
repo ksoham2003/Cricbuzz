@@ -48,9 +48,8 @@ const squadSchema = new mongoose.Schema(
 squadSchema.index({ seriesId: 1, teamId: 1 }, { unique: true });
 
 // Filter out soft-deleted squads by default
-squadSchema.pre(/^find/, function (next) {
+squadSchema.pre(/^find/, function () {
     this.where({ isDeleted: false });
-    next();
 });
 
 const Squad = mongoose.model("Squad", squadSchema);
