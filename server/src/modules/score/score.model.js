@@ -77,9 +77,8 @@ const scoreSchema = new mongoose.Schema(
 scoreSchema.index({ matchId: 1, innings: 1 }, { unique: true });
 
 // Exclude soft deleted scores
-scoreSchema.pre(/^find/, function (next) {
+scoreSchema.pre(/^find/, function () {
     this.where({ isDeleted: false });
-    next();
 });
 
 const Score = mongoose.model("Score", scoreSchema);
