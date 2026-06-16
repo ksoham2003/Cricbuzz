@@ -11,17 +11,30 @@ export function createSocketServer(httpServer) {
     });
 
     io.on("connection", (socket) => {
-        socket.on("match.join", (matchId) => {
+        const readMatchId = (payload) => {
+            if (typeof payload === "string") return payload;
+            return payload?.matchId;
+        };
+
+        const joinMatch = (payload) => {
+            const matchId = readMatchId(payload);
             if (mongoose.isObjectIdOrHexString(matchId)) {
                 socket.join(`match:${matchId}`);
             }
-        });
+        };
 
-        socket.on("match.leave", (matchId) => {
+        const leaveMatch = (payload) => {
+            const matchId = readMatchId(payload);
             if (mongoose.isObjectIdOrHexString(matchId)) {
                 socket.leave(`match:${matchId}`);
             }
-        });
+        };
+
+        socket.on("match.join", joinMatch);
+        socket.on("join-match", joinMatch);
+
+        socket.on("match.leave", leaveMatch);
+        socket.on("leave-match", leaveMatch);
     });
 
     return io;

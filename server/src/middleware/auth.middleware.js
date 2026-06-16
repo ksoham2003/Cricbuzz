@@ -1,17 +1,17 @@
 import jwt from "jsonwebtoken";
 import env from "../config/env.js";
 import { ApiError } from "../utils/ApiError.js";
+import appConstant from "../constant/app.constant.js";
 
 export const authenticate = (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            throw new ApiError(401, "Unauthorized: No token provided");
-        }
+        const bearerToken = authHeader?.startsWith("Bearer ") ? authHeader.split(" ")[1] : null;
+        const cookieToken = req.cookies?.[appConstant.ACCESS_TOKEN_COOKIE_NAME];
 
-        const token = authHeader.split(" ")[1];
+        const token = cookieToken || bearerToken;
         if (!token) {
-            throw new ApiError(401, "Unauthorized: Malformed token");
+            throw new ApiError(401, "Unauthorized: No token provided");
         }
 
         const decoded = jwt.verify(token, env.ACCESS_TOKEN_SECRET);
