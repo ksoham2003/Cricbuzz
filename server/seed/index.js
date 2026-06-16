@@ -10,6 +10,7 @@ import Player from "../src/modules/player/player.model.js";
 import Match from "../src/modules/match/match.model.js";
 import Score from "../src/modules/score/score.model.js";
 import Commentary from "../src/modules/commentary/commentary.model.js";
+import Squad from "../src/modules/squad/squad.model.js";
 
 // Load environment variables
 dotenv.config();
@@ -32,6 +33,7 @@ async function seed() {
       Match.deleteMany({}),
       Score.deleteMany({}),
       Commentary.deleteMany({}),
+      Squad.deleteMany({}),
     ]);
     console.log("Database cleared successfully.");
 
@@ -152,7 +154,25 @@ async function seed() {
     australiaTeam.captain = ausCaptain._id;
     await australiaTeam.save();
 
-    // 7. Create Match (LIVE with full playingXI)
+    // 7. Create squads
+    console.log("Creating squads...");
+    await Squad.create({
+      seriesId: series._id,
+      teamId: indiaTeam._id,
+      players: indianPlayers.map(player => player._id),
+      totalPlayers: indianPlayers.length,
+      status: "LOCKED",
+    });
+
+    await Squad.create({
+      seriesId: series._id,
+      teamId: australiaTeam._id,
+      players: australianPlayers.map(player => player._id),
+      totalPlayers: australianPlayers.length,
+      status: "LOCKED",
+    });
+
+    // 8. Create Match (LIVE with full playingXI)
     console.log("Scheduling Live Match...");
     const match = await Match.create({
       seriesId: series._id,
@@ -181,7 +201,7 @@ async function seed() {
 
     console.log("Match created:", match._id);
 
-    // 8. Create Score record
+    // 9. Create Score record
     console.log("Creating live score scorecard...");
     const score = await Score.create({
       matchId: match._id,
@@ -196,7 +216,7 @@ async function seed() {
 
     console.log("Score card created:", score._id);
 
-    // 9. Create Commentary records
+    // 10. Create Commentary records
     console.log("Creating ball commentary entries...");
     await Commentary.create({
       matchId: match._id,

@@ -116,9 +116,8 @@ matchSchema.index({ team1: 1, startTime: 1, isDeleted: 1 });
 matchSchema.index({ team2: 1, startTime: 1, isDeleted: 1 });
 
 // Exclude soft-deleted matches
-matchSchema.pre(/^find/, function (next) {
+matchSchema.pre(/^find/, function () {
     this.where({ isDeleted: false });
-    next();
 });
 
 const Match = mongoose.model("Match", matchSchema);
