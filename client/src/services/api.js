@@ -1,0 +1,62 @@
+import apiClient from '../api/client.js';
+import { authApi } from '../api/authApi.js';
+import { publicApi } from '../api/publicApi.js';
+import { adminApi } from '../api/adminApi.js';
+
+export const apiService = {
+  register: authApi.register,
+  login: authApi.login,
+  logout: authApi.logout,
+  refreshToken: authApi.refresh,
+  getMe: authApi.me,
+
+  getHome: publicApi.home,
+  getMatches: publicApi.matches,
+  getMatchById: publicApi.match,
+  getMatchCenter: publicApi.matchCenter,
+  getMatchScorecard: publicApi.scorecard,
+  getMatchCommentary: publicApi.commentary,
+  getSeries: publicApi.series,
+  getSeriesById: publicApi.seriesDetail,
+  getPointsTable: publicApi.pointsTable,
+  getTeams: publicApi.teams,
+  getTeamById: publicApi.team,
+  getPlayers: publicApi.players,
+  getPlayerById: publicApi.player,
+  getSquads: publicApi.squads,
+  getSquadById: publicApi.squad,
+  getSquadByTeam: publicApi.squadByTeam,
+  search: publicApi.search,
+
+  getUsers: adminApi.users,
+  createUser: adminApi.createUser,
+  createSeries: adminApi.createSeries,
+  updateSeries: adminApi.updateSeries,
+  deleteSeries: adminApi.deleteSeries,
+  createTeam: adminApi.createTeam,
+  updateTeam: adminApi.updateTeam,
+  deleteTeam: adminApi.deleteTeam,
+  createSquad: adminApi.createSquad,
+  addPlayerToSquad: adminApi.addPlayerToSquad,
+  removePlayerFromSquad: adminApi.removePlayerFromSquad,
+  updateSquadStatus: adminApi.updateSquadStatus,
+  createPlayer: adminApi.createPlayer,
+  updatePlayer: adminApi.updatePlayer,
+  deletePlayer: adminApi.deletePlayer,
+  createMatch: adminApi.createMatch,
+  updateMatch: adminApi.updateMatch,
+  deleteMatch: adminApi.deleteMatch,
+  conductToss: adminApi.conductToss,
+  selectPlayingXi: adminApi.selectPlayingXi,
+  startMatch: adminApi.startMatch,
+  inningsBreak: adminApi.inningsBreak,
+  completeMatch: adminApi.completeMatch,
+  createScore: adminApi.createScore,
+  updateScore: adminApi.updateScore,
+  getScores: adminApi.scores,
+  createCommentary: adminApi.createCommentary,
+  deleteCommentary: adminApi.deleteCommentary,
+  getCommentary: adminApi.commentary,
+};
+
+export default apiClient;

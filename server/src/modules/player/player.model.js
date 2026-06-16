@@ -122,15 +122,13 @@ const playerSchema = new mongoose.Schema(
 );
 
 // Pre-save middleware to auto-generate fullName
-playerSchema.pre("save", function (next) {
+playerSchema.pre("save", function () {
     this.fullName = `${this.firstName} ${this.lastName}`.trim();
-    next();
 });
 
 // Pre-query hook to transparently exclude soft-deleted records
-playerSchema.pre(/^find/, function (next) {
+playerSchema.pre(/^find/, function () {
     this.where({ isDeleted: false });
-    next();
 });
 
 const Player = mongoose.model("Player", playerSchema);
