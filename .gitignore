@@ -1,2 +1,11 @@
+.DS_Store
+node_modules/
+dist/
+coverage/
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+uploads/
 config.bat
-node_modules
